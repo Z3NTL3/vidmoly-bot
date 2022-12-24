@@ -2,21 +2,21 @@ package bot
 
 import (
 	"Z3NTL3/Vidmoly-Bot/config"
-	"crypto/tls"
+	"Z3NTL3/Vidmoly-Bot/typedefs"
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 
 	"golang.org/x/net/context"
 )
-func Fetch(webList, proxies *[]string, callb func()){
+func InitBypass(webList, proxies *[]string, callb typedefs.BypassType){
 	transport := config.Config()
 	client := http.Client{
 		Transport: transport,
 	}
-	bodyReader := new(io.Reader)
-	
-	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://pix4.dev", *bodyReader); if(err != nil){
+	var bodyReader io.ReadCloser
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://vidmoly.me/d/80sqn2j71v26", bodyReader); if(err != nil){
 		fmt.Println(err)
 	}
 
@@ -24,25 +24,32 @@ func Fetch(webList, proxies *[]string, callb func()){
 		fmt.Println(err)
 	}
 
-	var body string
-
+	var length int
+	var Storage bytes.Buffer
+	
 	for {
 		buffer := make([]byte,1042)
-		len, err := resp.Body.Read(buffer); if(err != nil){
-			break
+		readLenght, err := io.ReadFull(resp.Body,buffer); if(err != nil){
+			if(err == io.EOF){
+				break
+			}
 		}
-
-		body += string(buffer[0:len])
+		length += readLenght
+		Storage.Write(buffer)
 	}
-	tls_maps := map[uint16]string{
-		tls.VersionTLS10: "TLS 1.0",
-		tls.VersionTLS11: "TLS 1.1",
-		tls.VersionTLS12: "TLS 1.2",
-		tls.VersionTLS13: "TLS 1.3",
-	}
-
-
-	fmt.Println(body)
-	fmt.Println(tls_maps[resp.TLS.Version])
 	
+	body := make([]byte,length)
+	length, _ = Storage.Read(body)
+	fmt.Println(string(body[0:length]))
+
+	fmt.Println(config.TLS_Vers[resp.TLS.Version])
+	// fmt.Println(body)
+
+
+	// doc,err := htmlquery.Parse(strings.NewReader(body))
+	// nodes := htmlquery.Find(doc, "/html/body/div/div[2]/p/code[1]")
+	// if err != nil {
+	// 	panic(`not a valid XPath expression.`)
+	// }
+	// fmt.Println(htmlquery.InnerText(nodes[0]))
 }

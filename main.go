@@ -136,7 +136,7 @@ func Init() ([]string, []string){
 }
 
 func main() {
-	bot.Fetch(&[]string{"test"},&[]string{"test"},func() {
+	bot.InitBypass(&[]string{"test"},&[]string{"test"},func() {
 		fmt.Println()
 	})
 	// max_worker_count := runtime.NumCPU()

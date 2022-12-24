@@ -10,7 +10,8 @@ import (
 
 func Read(filepath string) (string){
 	file, err := os.Open(filepath); if(err != nil){
-		builder.Log("INFO", "Cannot open file, does it exist?", "FileSystem",string(typedefs.Red))
+		builder.Log("INFO", "Cannot open file, does it exist?", "FileSystem",string(typedefs.Red),"")
+		builder.Log("INFO", err.Error(), "Stderr",string(typedefs.Red),"\n")
 		os.Exit(-1)
 	}
 	

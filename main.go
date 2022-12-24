@@ -11,24 +11,20 @@ package main
 */
 
 import (
+	"Z3NTL3/Vidmoly-Bot/bot"
 	"Z3NTL3/Vidmoly-Bot/builder"
 	"Z3NTL3/Vidmoly-Bot/filesystem"
+	"Z3NTL3/Vidmoly-Bot/globals"
+	"Z3NTL3/Vidmoly-Bot/typedefs"
 	"fmt"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
-	"runtime"
+	"strconv"
 	"strings"
 
-	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
-)
-
-type RED string
-
-const (
-	red RED = "\033[38;5;216m"
 )
 
 type ProxyListGetter interface {
@@ -114,10 +110,15 @@ func Init() ([]string, []string){
 
 	cliArgs := os.Args[1:]
 	_valid := validArgs(&cliArgs); if(!_valid){
-		builder.Log("INFO", "Invalid CLI arguments! See 'USAGE.md' file!", "Arguments", string(red))
+		builder.Log("INFO", "Invalid CLI arguments! See 'USAGE.md' file!", "Arguments", string(typedefs.Red),"")
 		os.Exit(-1)
 	}
-	
+	tOut, err := strconv.Atoi(cliArgs[2]); if (err != nil){
+		builder.Log("INFO", "Invalid CLI arguments! See 'USAGE.md' file!", "Arguments", string(typedefs.Red),"")
+		builder.Log("ERROR", err.Error(), "Arguments", string(typedefs.Red),"")
+	}
+	globals.Timeout = tOut
+
 	var api Sharpness
 	api.filepath = basePath
 
@@ -126,7 +127,7 @@ func Init() ([]string, []string){
 	}
 
 	valids,proxies := checkProxiesRegEx(proxies); if(!valids){
-		builder.Log("INFO", "Bad Proxy Format! Only username:pass@ip:port", "Proxy Format", string(red))
+		builder.Log("INFO", "Bad Proxy Format! Only username:pass@ip:port", "Proxy Format", string(typedefs.Red),"")
 		os.Exit(-1)
 	}
 
@@ -135,14 +136,17 @@ func Init() ([]string, []string){
 }
 
 func main() {
-	max_worker_count := runtime.NumCPU()
-	free_cores := 3
+	bot.Fetch(&[]string{"test"},&[]string{"test"},func() {
+		fmt.Println()
+	})
+	// max_worker_count := runtime.NumCPU()
+	// free_cores := 3
 	
-	group := new(errgroup.Group)
-	group.SetLimit(10000 * (max_worker_count - free_cores))
+	// group := new(errgroup.Group)
+	// group.SetLimit(10000 * (max_worker_count - free_cores))
 
-	webLinks, _ := Init()
-	for i,v := range webLinks{
-		fmt.Println(i,v)
-	}
+	// webLinks, _ := Init()
+	// websitesValidity := checker.Website(webLinks); if(!websitesValidity){
+	// 	builder.Log("INFO", "Invalid web-links provided!", "Invalid URI", string(typedefs.Red),"")
+	// }
 }

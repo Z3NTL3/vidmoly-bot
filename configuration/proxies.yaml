@@ -1,0 +1,8 @@
+proxies:
+  # keep in mind that your proxy list proxies needs to be username:pass@ip:port format
+  list: [
+      192.168.1.1, # Proxy Test
+      192.168.1.1, # Proxy Test
+      192.168.1.1, # Proxy Test
+      cyudpflm:fptnjv7ap6cg@185.199.229.156:7492, # Proxy Test
+    ]

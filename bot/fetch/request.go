@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
 func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
@@ -50,9 +51,14 @@ func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
 	_ = config.TLS_Vers[resp.TLS.Version]
 
 	HTML_DOM := xpath.Document{Htmldoc: bodyFull}
-	_, _,_, _, err = HTML_DOM.GetPayload(); if err != nil {
+	origin, id, mode,hash, err := HTML_DOM.GetPayload(); if err != nil {
 		return err
 	}
+	
+	if len(origin) | len(id) | len(mode) |  len(hash) == 0 {
+		return errors.New("Some of the URLs in your file arent vidmoly matching or are incorrect! See README.md for help")
+	}
+
 	// bypass stuk nog te doen
 	return nil
 }

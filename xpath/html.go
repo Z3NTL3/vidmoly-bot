@@ -1,7 +1,6 @@
 package xpath
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/antchfx/htmlquery"
@@ -31,7 +30,7 @@ func (c *Document) GetPayload() (origin,id,mode,hash string, err error) {
 	for _ , n := range inputs{
 		name := htmlquery.SelectAttr(n,"name")
 		value := htmlquery.SelectAttr(n,"value")
-		
+	
 		data[name] = value
 	}
 
@@ -40,7 +39,5 @@ func (c *Document) GetPayload() (origin,id,mode,hash string, err error) {
 	mode = data["mode"]
 	hash = data["hash"]
 
-	fmt.Println(data)
-	
 	return
 }

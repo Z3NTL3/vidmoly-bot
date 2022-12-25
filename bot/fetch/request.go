@@ -4,17 +4,21 @@ import (
 	"Z3NTL3/Vidmoly-Bot/builder"
 	"Z3NTL3/Vidmoly-Bot/checker"
 	"Z3NTL3/Vidmoly-Bot/config"
+	"Z3NTL3/Vidmoly-Bot/globals"
 	"Z3NTL3/Vidmoly-Bot/typedefs"
 	"Z3NTL3/Vidmoly-Bot/xpath"
 	"bytes"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
 func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
+	rand.Seed(time.Now().Unix())
 	err := checker.CheckProxy(proxy); if(err != nil){
 		return err
 	}
@@ -22,6 +26,7 @@ func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
 	transport := config.Config()
 	client := http.Client{
 		Transport: transport,
+		Timeout: (time.Duration(globals.Timeout)*time.Second),
 	}
 	var bodyReader io.ReadCloser
 	req, err := http.NewRequestWithContext(context.Background(), "GET", *web, bodyReader); if(err != nil){
@@ -29,7 +34,8 @@ func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
 		builder.Log("Err Info",err.Error(), "Req obj init", string(typedefs.Red),"\n")
 		return nil
 	}
-
+	req.Header.Add("User-Agent", typedefs.Headers_[rand.Intn(len(typedefs.Headers_))])
+	
 	resp, err := client.Do(req); if(err != nil){
 		builder.Log("ERR",fmt.Sprintf("Could not fetch: %s",*web), "GET FETCH", string(typedefs.Red),"")
 		builder.Log("Err Info",err.Error(), "GET FETCH", string(typedefs.Red),"\n")

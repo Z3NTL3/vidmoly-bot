@@ -164,7 +164,7 @@ func main() {
 	for _,v := range infos["links"] {
 		group.Go( func()(error){
 			return  fetch.InitBypass(&v,&infos["proxies"][0],func() {
-					fmt.Println() // dit moet allemaal eigenlijk gestart worden met waitgroup of errgroup voor goroutines dat doe ik later dit is nog in test fase
+					fmt.Println() // callback voor bypass.go komt nog
 			})
 		})
 	}

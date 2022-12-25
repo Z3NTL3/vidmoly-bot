@@ -157,6 +157,6 @@ func main() {
 		builder.Log("INFO", "Invalid web-links provided!", "Invalid URI", string(typedefs.Red),"")
 	}
 	fetch.InitBypass(&a,&b,func() {
-		fmt.Println()
+		fmt.Println() // dit moet allemaal eigenlijk gestart worden met waitgroup of errgroup voor goroutines dat doe ik later dit is nog in test fase
 	})
 }

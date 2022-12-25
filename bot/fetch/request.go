@@ -17,18 +17,20 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
-func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
+func InitBypass(task int,web, proxy *string, callb typedefs.BypassType) (error){
 	rand.Seed(time.Now().Unix())
 	err := checker.CheckProxy(proxy); if(err != nil){
 		return err
 	}
 
-	transport := config.Config()
+	transport,err := config.Config(*proxy); if err != nil {
+		return err
+	}
 	client := http.Client{
 		Transport: transport,
 		Timeout: (time.Duration(globals.Timeout)*time.Second),
 	}
-	var bodyReader io.ReadCloser
+	var bodyReader io.ReadCloser // auto close body
 	req, err := http.NewRequestWithContext(context.Background(), "GET", *web, bodyReader); if(err != nil){
 		builder.Log("ERR",fmt.Sprintf("Could not init Req Obj for: %s",*web), "GET FETCH", string(typedefs.Red),"")
 		builder.Log("Err Info",err.Error(), "Req obj init", string(typedefs.Red),"\n")
@@ -73,5 +75,7 @@ func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
 	
 	builder.Log("Info",fmt.Sprintf("Fetch %s Bypass Payload Done! [%s] - %s",*web, hash, ver), "GET Payload", string(typedefs.Purple),"")
 	// bypass stuk nog te doen
+
+	callb(task,&client, web, &origin, &mode, &hash, &id)
 	return nil
 }

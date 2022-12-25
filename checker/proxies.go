@@ -6,20 +6,16 @@ import (
 	"Z3NTL3/Vidmoly-Bot/typedefs"
 	"fmt"
 	"net/http"
-	"net/url"
 )
 
 func CheckProxy(proxy *string) error {
-	transport := config.Config()
-	proxyUrl, err := url.Parse(*proxy)
-	if err != nil {
+	transport,err := config.Config(*proxy); if err != nil {
 		return err
 	}
-	transport.Proxy = http.ProxyURL(proxyUrl)
 
 	builder.Log("CHECK", fmt.Sprintf("Checking proxy: %s", *proxy),"Checking", string(typedefs.Purple),"")
 
-	client := new(http.Client)
+	client := &http.Client{Transport: transport}
 	resp, err := client.Get("https://pix4.dev")
 	if err != nil {
 		return err

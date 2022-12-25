@@ -11,13 +11,13 @@ package main
 */
 
 import (
+	"Z3NTL3/Vidmoly-Bot/bot"
 	"Z3NTL3/Vidmoly-Bot/bot/fetch"
 	"Z3NTL3/Vidmoly-Bot/builder"
 	"Z3NTL3/Vidmoly-Bot/checker"
 	"Z3NTL3/Vidmoly-Bot/filesystem"
 	"Z3NTL3/Vidmoly-Bot/globals"
 	"Z3NTL3/Vidmoly-Bot/typedefs"
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -161,11 +161,9 @@ func main() {
 		builder.Log("INFO", "There is no data present in proxies.yaml or your provided weblist txt file", "No Data", string(typedefs.Red),"")
 	}
 
-	for _,v := range infos["links"] {
+	for i,v := range infos["links"] {
 		group.Go( func()(error){
-			return  fetch.InitBypass(&v,&infos["proxies"][0],func() {
-					fmt.Println() // callback voor bypass.go komt nog
-			})
+			return  fetch.InitBypass(i+1,&v,&infos["proxies"][0], bot.Bypass)
 		})
 	}
 

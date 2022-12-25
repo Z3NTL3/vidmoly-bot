@@ -1,7 +1,8 @@
 package typedefs
 
-type RED string
+type color string
 
 const (
-	Red RED = "\033[38;5;196m"
+	Red    color = "\033[38;5;196m"
+	Purple color = "\033[38;5;134m"
 )

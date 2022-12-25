@@ -15,10 +15,12 @@ func CheckProxy(proxy *string) error {
 	transport.Proxy = http.ProxyURL(proxyUrl)
 
 	client := new(http.Client)
-	_, err = client.Get("https://pix4.dev")
+	resp, err := client.Get("https://pix4.dev")
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
+	
 	// error will throw if it cannot connect to the proxy
 
 	return nil

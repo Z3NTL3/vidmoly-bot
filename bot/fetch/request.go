@@ -1,6 +1,7 @@
 package fetch
 
 import (
+	"Z3NTL3/Vidmoly-Bot/builder"
 	"Z3NTL3/Vidmoly-Bot/checker"
 	"Z3NTL3/Vidmoly-Bot/config"
 	"Z3NTL3/Vidmoly-Bot/typedefs"
@@ -24,11 +25,15 @@ func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
 	}
 	var bodyReader io.ReadCloser
 	req, err := http.NewRequestWithContext(context.Background(), "GET", *web, bodyReader); if(err != nil){
-		fmt.Println(err)
+		builder.Log("ERR",fmt.Sprintf("Could not init Req Obj for: %s",*web), "GET FETCH", string(typedefs.Red),"")
+		builder.Log("Err Info",err.Error(), "Req obj init", string(typedefs.Red),"\n")
+		return nil
 	}
 
 	resp, err := client.Do(req); if(err != nil){
-		fmt.Println(err)
+		builder.Log("ERR",fmt.Sprintf("Could not fetch: %s",*web), "GET FETCH", string(typedefs.Red),"")
+		builder.Log("Err Info",err.Error(), "GET FETCH", string(typedefs.Red),"\n")
+		return nil
 	}
 
 	var length int
@@ -48,7 +53,7 @@ func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
 	body := make([]byte,length)
 	length, _ = Storage.Read(body)
 	bodyFull := string(body[0:length])
-	_ = config.TLS_Vers[resp.TLS.Version]
+	ver := config.TLS_Vers[resp.TLS.Version]
 
 	HTML_DOM := xpath.Document{Htmldoc: bodyFull}
 	origin, id, mode,hash, err := HTML_DOM.GetPayload(); if err != nil {
@@ -59,6 +64,8 @@ func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
 		return errors.New("Some of the URLs in your file arent vidmoly matching or are incorrect! See README.md for help")
 	}
 
+	
+	builder.Log("Info",fmt.Sprintf("Fetch %s Bypass Payload Done! [%s] - %s",*web, hash, ver), "GET Payload", string(typedefs.Red),"")
 	// bypass stuk nog te doen
 	return nil
 }

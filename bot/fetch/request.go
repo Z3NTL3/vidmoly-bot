@@ -1,8 +1,9 @@
-package bot
+package fetch
 
 import (
 	"Z3NTL3/Vidmoly-Bot/config"
 	"Z3NTL3/Vidmoly-Bot/typedefs"
+	"Z3NTL3/Vidmoly-Bot/xpath"
 	"bytes"
 	"fmt"
 	"io"
@@ -10,7 +11,7 @@ import (
 
 	"golang.org/x/net/context"
 )
-func InitBypass(webList, proxies *[]string, callb typedefs.BypassType){
+func InitBypass(webList, proxies *string, callb typedefs.BypassType) (error){
 	transport := config.Config()
 	client := http.Client{
 		Transport: transport,
@@ -40,16 +41,10 @@ func InitBypass(webList, proxies *[]string, callb typedefs.BypassType){
 	
 	body := make([]byte,length)
 	length, _ = Storage.Read(body)
-	fmt.Println(string(body[0:length]))
+	bodyFull := string(body[0:length])
+	_ = config.TLS_Vers[resp.TLS.Version]
 
-	fmt.Println(config.TLS_Vers[resp.TLS.Version])
-	// fmt.Println(body)
-
-
-	// doc,err := htmlquery.Parse(strings.NewReader(body))
-	// nodes := htmlquery.Find(doc, "/html/body/div/div[2]/p/code[1]")
-	// if err != nil {
-	// 	panic(`not a valid XPath expression.`)
-	// }
-	// fmt.Println(htmlquery.InnerText(nodes[0]))
+	HTML_DOM := xpath.Document{Htmldoc: bodyFull}
+	HTML_DOM.GetPayload()
+	return nil
 }

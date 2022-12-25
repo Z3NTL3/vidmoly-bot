@@ -6,9 +6,11 @@ import (
 
 func Website(websiteList []string) (isValid bool) {
 	isValid = true
-	regex := regexp.MustCompile(`^(?:[a-zA-Z0-9]{1,62}(?:[-\.][a-zA-Z0-9]{1,62})+)(:\d+)?$`)
+	regex := regexp.MustCompile(`^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?`)
 
 	for _,val := range websiteList {
+		// fmt.Println(val,regex.MatchString(val))
+		
 		if(!regex.MatchString(val)){
 			isValid = false
 			break

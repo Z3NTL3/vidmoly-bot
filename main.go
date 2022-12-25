@@ -11,8 +11,9 @@ package main
 */
 
 import (
-	"Z3NTL3/Vidmoly-Bot/bot"
+	"Z3NTL3/Vidmoly-Bot/bot/fetch"
 	"Z3NTL3/Vidmoly-Bot/builder"
+	"Z3NTL3/Vidmoly-Bot/checker"
 	"Z3NTL3/Vidmoly-Bot/filesystem"
 	"Z3NTL3/Vidmoly-Bot/globals"
 	"Z3NTL3/Vidmoly-Bot/typedefs"
@@ -21,9 +22,11 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
 )
 
@@ -49,11 +52,6 @@ func (c Sharpness) getProxies() ([]string, error) {
 		return nil,err
 	}
 	return c.Proxies["list"] ,nil
-}
-
-func errHandler(err error){
-	fmt.Println("\033[31m",err, "\033[0m")
-	os.Exit(-1)
 }
 
 func checkProxiesRegEx(ctx []string) (bool, []string){
@@ -98,12 +96,12 @@ func validArgs(args *[]string) (valid bool){
 	return
 }
 
-func Init() ([]string, []string){
+func Init() ([]string, []string, error){
 	cwd, err := os.Getwd(); if err != nil {
-		errHandler(err)
+		globals.ErrHandler(err)
 	}
 	basePath ,err := filepath.Abs(cwd);  if err != nil {
-		errHandler(err)
+		globals.ErrHandler(err)
 	}
 
 	builder.Logo()
@@ -113,17 +111,19 @@ func Init() ([]string, []string){
 		builder.Log("INFO", "Invalid CLI arguments! See 'USAGE.md' file!", "Arguments", string(typedefs.Red),"")
 		os.Exit(-1)
 	}
-	tOut, err := strconv.Atoi(cliArgs[2]); if (err != nil){
-		builder.Log("INFO", "Invalid CLI arguments! See 'USAGE.md' file!", "Arguments", string(typedefs.Red),"")
-		builder.Log("ERROR", err.Error(), "Arguments", string(typedefs.Red),"")
+	if(len(cliArgs) == 3){
+		tOut, err := strconv.Atoi(cliArgs[2]); if (err != nil){
+			builder.Log("INFO", "Invalid CLI arguments! See 'USAGE.md' file!", "Arguments", string(typedefs.Red),"")
+			builder.Log("ERROR", err.Error(), "Arguments", string(typedefs.Red),"")
+		}		
+		globals.Timeout = tOut
 	}
-	globals.Timeout = tOut
 
 	var api Sharpness
 	api.filepath = basePath
 
 	proxies, err := api.getProxies(); if(err != nil){
-		errHandler(err)
+		globals.ErrHandler(err)
 	}
 
 	valids,proxies := checkProxiesRegEx(proxies); if(!valids){
@@ -132,21 +132,31 @@ func Init() ([]string, []string){
 	}
 
 	webList := filesystem.Read(path.Join(basePath, cliArgs[0]))
-	return strings.Split(webList, "\n"), proxies
+	if(len(webList) == 0 || len(proxies) == 0){
+		return []string{"empty"}, []string{"empty"}, nil
+	}
+	return strings.Split(webList, "\n"), proxies, nil
 }
 
 func main() {
-	bot.InitBypass(&[]string{"test"},&[]string{"test"},func() {
+	a := "test"
+	b := "test"
+
+	max_worker_count := runtime.NumCPU()
+	free_cores := 3
+	
+	group := new(errgroup.Group)
+	group.SetLimit(10000 * (max_worker_count - free_cores))
+
+	webLinks, _, err:= Init(); if(err != nil){
+		builder.Log("INFO", err.Error(), "Error", string(typedefs.Red),"")
+		os.Exit(-1)
+	}
+
+	websitesValidity := checker.Website(webLinks); if(!websitesValidity || webLinks[0] == "empty"){
+		builder.Log("INFO", "Invalid web-links provided!", "Invalid URI", string(typedefs.Red),"")
+	}
+	fetch.InitBypass(&a,&b,func() {
 		fmt.Println()
 	})
-	// max_worker_count := runtime.NumCPU()
-	// free_cores := 3
-	
-	// group := new(errgroup.Group)
-	// group.SetLimit(10000 * (max_worker_count - free_cores))
-
-	// webLinks, _ := Init()
-	// websitesValidity := checker.Website(webLinks); if(!websitesValidity){
-	// 	builder.Log("INFO", "Invalid web-links provided!", "Invalid URI", string(typedefs.Red),"")
-	// }
 }

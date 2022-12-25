@@ -2,6 +2,7 @@ package bot
 
 import (
 	"Z3NTL3/Vidmoly-Bot/builder"
+	"Z3NTL3/Vidmoly-Bot/filesystem"
 	"Z3NTL3/Vidmoly-Bot/typedefs"
 	"Z3NTL3/Vidmoly-Bot/xpath"
 	"compress/gzip"
@@ -40,8 +41,9 @@ func Bypass(
 	req.Header.Add("Accept-Encoding", "gzip")
 	req.Header.Add("Connection", "keep-alive")
 	req.Header.Add("Keep-Alive", "timeout=5")
-	req.Header.Add("Referer", "https://www.google.com/search?q=")
-
+	req.Header.Add("Referer",  typedefs.Referers[rand.Intn(len(typedefs.Referers))])
+	req.Header.Add("Accept",  strings.ReplaceAll(typedefs.Accept[rand.Intn(len(typedefs.Accept))],"\r\n",""))
+	
 	resp, err := client.Do(req); if err != nil {
 		builder.Log("Err Info",err.Error(), "Err", string(typedefs.Red),"\n")
 		return
@@ -69,4 +71,8 @@ func Bypass(
 		builder.Log("Task",fmt.Sprintf("Task %d Failed - %s Didnt bypass... For unknown reason ", taskid, *src) ,"Task", string(typedefs.Red),"")
 	}
 
+	err = filesystem.WriteToSaveFile(*src); if err != nil {
+		builder.Log("Err Info",err.Error(), "Err", string(typedefs.Red),"\n")
+		return
+	}
 }

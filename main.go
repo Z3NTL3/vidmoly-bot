@@ -23,7 +23,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
-	"strconv"
 	"strings"
 	"time"
 
@@ -85,6 +84,7 @@ func validArgs(args *[]string) (valid bool){
 		if(!fileREGEX.MatchString(fileArg) || !numberREGEX.MatchString(timeoutArg)){
 			valid = false
 		}
+		
 
 	} else  {
 		valid = false
@@ -106,13 +106,6 @@ func Init() ([]string, []string, error){
 	_valid := validArgs(&cliArgs); if(!_valid){
 		builder.Log("INFO", "Invalid CLI arguments! See 'USAGE.md' file!", "Arguments", string(typedefs.Red),"")
 		os.Exit(-1)
-	}
-	if(len(cliArgs) == 3){
-		tOut, err := strconv.Atoi(cliArgs[2]); if (err != nil){
-			builder.Log("INFO", "Invalid CLI arguments! See 'USAGE.md' file!", "Arguments", string(typedefs.Red),"")
-			builder.Log("ERROR", err.Error(), "Arguments", string(typedefs.Red),"")
-		}		
-		globals.Timeout = tOut
 	}
 
 	var api Sharpness

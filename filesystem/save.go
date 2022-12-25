@@ -5,10 +5,14 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 func WriteToSaveFile(data string) (error){
-	if len(data) != 1 || data != ""{
+	data = strings.ReplaceAll(data, "\n","")
+	data = strings.ReplaceAll(data, "\r","")
+
+	if len(data) != 0 && data != "" || strings.Contains(data,"mp4"){
 		cwd, err := os.Getwd(); if err != nil {
 			return err
 		}
@@ -19,7 +23,7 @@ func WriteToSaveFile(data string) (error){
 			return err
 		}
 		defer file.Close()
-		_, err = file.WriteString(fmt.Sprintf("%s\n",data)); if err != nil {
+		_, err = file.WriteString(fmt.Sprintf("%s\r\n",data)); if err != nil {
 			return err
 		}
 	}

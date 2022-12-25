@@ -65,14 +65,14 @@ func Bypass(
 		return
 	}
 
-	if len(*src) != 0 {
-		builder.Log("Task",fmt.Sprintf("Task %d completed - %s Saved to save dir file ", taskid, *src) ,"Task", string(typedefs.Purple),"")
+	if len(src) != 0 && src != ""{
+		builder.Log("Task",fmt.Sprintf("Task %d completed - %s Saved to save dir file ", taskid, src) ,"Task", string(typedefs.Purple),"")
+		err = filesystem.WriteToSaveFile(src); if err != nil {
+			builder.Log("Err Info",err.Error(), "Err", string(typedefs.Red),"\n")
+			return
+		}
 	} else {
-		builder.Log("Task",fmt.Sprintf("Task %d Failed - %s Didnt bypass... For unknown reason ", taskid, *src) ,"Task", string(typedefs.Red),"")
+		builder.Log("Task",fmt.Sprintf("Task %d Failed - %s Didnt bypass... For unknown reason ", taskid, src) ,"Task", string(typedefs.Red),"")
 	}
 
-	err = filesystem.WriteToSaveFile(*src); if err != nil {
-		builder.Log("Err Info",err.Error(), "Err", string(typedefs.Red),"\n")
-		return
-	}
 }

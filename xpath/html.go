@@ -20,15 +20,15 @@ type Document struct {
 	Htmldoc string
 }
 
-func(c *Document) GetDownloadSource() (*string, error){
+func(c *Document) GetDownloadSource() (string, error){
 	doc, err := htmlquery.Parse(strings.NewReader(c.Htmldoc)); if(err != nil){
-		return nil,err
+		return "",err
 	}
 
 	video := htmlquery.FindOne(doc, src)
 	src := htmlquery.SelectAttr(video,"href")
 
-	return &src, err
+	return src, err
 }
 
 // origin, id, mode, hash, err

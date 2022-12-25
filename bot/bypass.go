@@ -38,8 +38,9 @@ func Bypass(
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("User-Agent", typedefs.Headers_[rand.Intn(len(typedefs.Headers_))])
 	req.Header.Add("Accept-Encoding", "gzip")
-	req.Header.Add("Connection", "Keep-Alive")
-	req.Header.Add("Keep-Alive", "max=650000")
+	req.Header.Add("Connection", "keep-alive")
+	req.Header.Add("Keep-Alive", "timeout=5")
+	req.Header.Add("Referer", "https://www.google.com/search?q=")
 
 	resp, err := client.Do(req); if err != nil {
 		builder.Log("Err Info",err.Error(), "Err", string(typedefs.Red),"\n")
@@ -61,13 +62,11 @@ func Bypass(
 		builder.Log("Err Info",err.Error(), "Err", string(typedefs.Red),"\n")
 		return
 	}
-	
+
 	if len(*src) != 0 {
 		builder.Log("Task",fmt.Sprintf("Task %d completed - %s Saved to save dir file ", taskid, *src) ,"Task", string(typedefs.Purple),"")
 	} else {
 		builder.Log("Task",fmt.Sprintf("Task %d Failed - %s Didnt bypass... For unknown reason ", taskid, *src) ,"Task", string(typedefs.Red),"")
 	}
-
-	fmt.Println(resp.Request.Header)
 
 }

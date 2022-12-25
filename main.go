@@ -11,13 +11,11 @@ package main
 */
 
 import (
-	"Z3NTL3/Vidmoly-Bot/bot/fetch"
 	"Z3NTL3/Vidmoly-Bot/builder"
 	"Z3NTL3/Vidmoly-Bot/checker"
 	"Z3NTL3/Vidmoly-Bot/filesystem"
 	"Z3NTL3/Vidmoly-Bot/globals"
 	"Z3NTL3/Vidmoly-Bot/typedefs"
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -127,7 +125,7 @@ func Init() ([]string, []string, error){
 	}
 
 	valids,proxies := checkProxiesRegEx(proxies); if(!valids){
-		builder.Log("INFO", "Bad Proxy Format! Only username:pass@ip:port", "Proxy Format", string(typedefs.Red),"")
+		builder.Log("INFO", "Bad Proxy Format! Only username:pass@ip:port or you have 0 proxies", "Proxy Format", string(typedefs.Red),"")
 		os.Exit(-1)
 	}
 
@@ -139,8 +137,7 @@ func Init() ([]string, []string, error){
 }
 
 func main() {
-	a := "test"
-	b := "test"
+	infos := make(map[string] []string)
 
 	max_worker_count := runtime.NumCPU()
 	free_cores := 3
@@ -148,15 +145,22 @@ func main() {
 	group := new(errgroup.Group)
 	group.SetLimit(10000 * (max_worker_count - free_cores))
 
-	webLinks, _, err:= Init(); if(err != nil){
+	webLinks, proxies, err:= Init(); if(err != nil){
 		builder.Log("INFO", err.Error(), "Error", string(typedefs.Red),"")
 		os.Exit(-1)
 	}
 
+	infos["links"] = webLinks
+	infos["proxies"] = proxies
+	
 	websitesValidity := checker.Website(webLinks); if(!websitesValidity || webLinks[0] == "empty"){
-		builder.Log("INFO", "Invalid web-links provided!", "Invalid URI", string(typedefs.Red),"")
+		builder.Log("INFO", "Invalid web-links provided or there is no links data in your file present", "Invalid URI", string(typedefs.Red),"")
 	}
-	fetch.InitBypass(&a,&b,func() {
-		fmt.Println() // dit moet allemaal eigenlijk gestart worden met waitgroup of errgroup voor goroutines dat doe ik later dit is nog in test fase
-	})
+	// fetch.InitBypass(&a,&b,func() {
+	// 	fmt.Println() // dit moet allemaal eigenlijk gestart worden met waitgroup of errgroup voor goroutines dat doe ik later dit is nog in test fase
+	// })
+
+	valid := checker.CheckInfo(infos); if(!valid){
+		builder.Log("INFO", "There is no data present in proxies.yaml or your provided weblist txt file", "No Data", string(typedefs.Red),"")
+	}
 }

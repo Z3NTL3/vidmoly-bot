@@ -25,6 +25,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 
 	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
@@ -130,6 +131,7 @@ func Init() ([]string, []string, error){
 	if(len(webList) == 0 || len(proxies) == 0){
 		return []string{"empty"}, []string{"empty"}, nil
 	}
+	webList = strings.ReplaceAll(webList,"\r","")
 	return strings.Split(webList, "\n"), proxies, nil
 }
 
@@ -161,10 +163,17 @@ func main() {
 		builder.Log("INFO", "There is no data present in proxies.yaml or your provided weblist txt file", "No Data", string(typedefs.Red),"")
 	}
 
-	for i,v := range infos["links"] {
+	task := 1
+	for _,v := range infos["links"] {
+		
+		link := v
+		proxy := infos["proxies"][0]
+
 		group.Go( func()(error){
-			return  fetch.InitBypass(i+1,&v,&infos["proxies"][0], bot.Bypass)
+			return  fetch.InitBypass(task,&link,&proxy, bot.Bypass)
 		})
+		time.Sleep(time.Millisecond * 100)
+		task++
 	}
 
 	err = group.Wait(); if(err != nil){

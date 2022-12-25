@@ -8,7 +8,7 @@ import (
 
 const (
 	payloadInfo = "//td[1]//input[@type='hidden' and @name= 'op' and @value !='login' or @name='hash' or @name='mode' or @name='id']"
-	src = "/html/body/div/div[2]/div[1]/div/div/div[2]/span/a"
+	src = "/html/body/div/div[2]/div[1]/div/div/div[2]/span/span/a"
 )
 
 type Api interface {

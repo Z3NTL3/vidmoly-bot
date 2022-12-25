@@ -18,14 +18,14 @@ var (
 
 
 func Config(proxy string) (*http.Transport, error){
-	proxyUrl, err := url.Parse(fmt.Sprintf("http://%s",proxy)); if err != nil {
+	proxyUrl, err := url.Parse(fmt.Sprintf("socks4://%s",proxy)); if err != nil {
 		return nil,err
 	}
 	transport := &http.Transport{
 		Proxy: http.ProxyURL(proxyUrl),
 		ForceAttemptHTTP2: true,
 		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify : true,
+			InsecureSkipVerify : false,
 		} ,
 	}
 

@@ -11,11 +11,13 @@ package main
 */
 
 import (
+	"Z3NTL3/Vidmoly-Bot/bot/fetch"
 	"Z3NTL3/Vidmoly-Bot/builder"
 	"Z3NTL3/Vidmoly-Bot/checker"
 	"Z3NTL3/Vidmoly-Bot/filesystem"
 	"Z3NTL3/Vidmoly-Bot/globals"
 	"Z3NTL3/Vidmoly-Bot/typedefs"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -36,11 +38,6 @@ type Sharpness struct {
 	Proxies map[string] []string `yaml:"proxies"`
 	filepath string
 } 
-
-type Context struct {
-	proxyList []string // user:pass@ip:port proxies format
-	vidmoly_cdn_link string // url
-}
 
 func (c Sharpness) getProxies() ([]string, error) {
 	file, err := os.ReadFile(path.Join(c.filepath,"configuration","proxies.yaml"));if err != nil {
@@ -162,5 +159,17 @@ func main() {
 
 	valid := checker.CheckInfo(infos); if(!valid){
 		builder.Log("INFO", "There is no data present in proxies.yaml or your provided weblist txt file", "No Data", string(typedefs.Red),"")
+	}
+
+	for _,v := range infos["links"] {
+		group.Go( func()(error){
+			return  fetch.InitBypass(&v,&infos["proxies"][0],func() {
+					fmt.Println() // dit moet allemaal eigenlijk gestart worden met waitgroup of errgroup voor goroutines dat doe ik later dit is nog in test fase
+			})
+		})
+	}
+
+	err = group.Wait(); if(err != nil){
+		builder.Log("INFO", err.Error(), "Error", string(typedefs.Red),"")
 	}
 }

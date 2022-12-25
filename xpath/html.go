@@ -1,8 +1,6 @@
 package xpath
 
 import (
-	"Z3NTL3/Vidmoly-Bot/builder"
-	"Z3NTL3/Vidmoly-Bot/globals"
 	"fmt"
 	"strings"
 
@@ -24,7 +22,7 @@ type Document struct {
 // origin, id, mode, hash, err
 func (c *Document) GetPayload() (origin,id,mode,hash string, err error) {
 	doc, err := htmlquery.Parse(strings.NewReader(c.Htmldoc)); if(err != nil){
-		globals.ErrHandler(err)
+		return "","","","",err
 	}
 	
 	data := make(map[string]string)
@@ -41,7 +39,8 @@ func (c *Document) GetPayload() (origin,id,mode,hash string, err error) {
 	id = data["id"]
 	mode = data["mode"]
 	hash = data["hash"]
+
+	fmt.Println(data)
 	
-	builder.Log("INFO", fmt.Sprint(data), "Uncompleted Early Development Stage", "\033[38;5;147m","")
 	return
 }

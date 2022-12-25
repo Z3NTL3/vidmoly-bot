@@ -1,6 +1,7 @@
 package fetch
 
 import (
+	"Z3NTL3/Vidmoly-Bot/checker"
 	"Z3NTL3/Vidmoly-Bot/config"
 	"Z3NTL3/Vidmoly-Bot/typedefs"
 	"Z3NTL3/Vidmoly-Bot/xpath"
@@ -11,13 +12,17 @@ import (
 
 	"golang.org/x/net/context"
 )
-func InitBypass(webList, proxies *string, callb typedefs.BypassType) (error){
+func InitBypass(web, proxy *string, callb typedefs.BypassType) (error){
+	err := checker.CheckProxy(proxy); if(err != nil){
+		return err
+	}
+
 	transport := config.Config()
 	client := http.Client{
 		Transport: transport,
 	}
 	var bodyReader io.ReadCloser
-	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://vidmoly.me/d/80sqn2j71v26", bodyReader); if(err != nil){
+	req, err := http.NewRequestWithContext(context.Background(), "GET", *web, bodyReader); if(err != nil){
 		fmt.Println(err)
 	}
 
@@ -45,6 +50,9 @@ func InitBypass(webList, proxies *string, callb typedefs.BypassType) (error){
 	_ = config.TLS_Vers[resp.TLS.Version]
 
 	HTML_DOM := xpath.Document{Htmldoc: bodyFull}
-	HTML_DOM.GetPayload()
+	_, _,_, _, err = HTML_DOM.GetPayload(); if err != nil {
+		return err
+	}
+	// bypass stuk nog te doen
 	return nil
 }

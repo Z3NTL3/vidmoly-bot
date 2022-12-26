@@ -72,7 +72,6 @@ func InitBypass(task int,web, proxy *string, callb typedefs.BypassType) (error){
 	}
 	
 	builder.Log("Info",fmt.Sprintf("Fetch %s Bypass Payload Done! [%s] - %s",*web, hash, ver), "GET Payload", string(typedefs.Purple),"")
-	// bypass stuk nog te doen
 
 	callb(task,&client, web, &origin, &mode, &hash, &id)
 	return nil

@@ -148,9 +148,6 @@ func main() {
 	websitesValidity := checker.Website(webLinks); if(!websitesValidity || webLinks[0] == "empty"){
 		builder.Log("INFO", "Invalid web-links provided or there is no links data in your file present", "Invalid URI", string(typedefs.Red),"")
 	}
-	// fetch.InitBypass(&a,&b,func() {
-	// 	fmt.Println() // dit moet allemaal eigenlijk gestart worden met waitgroup of errgroup voor goroutines dat doe ik later dit is nog in test fase
-	// })
 
 	valid := checker.CheckInfo(infos); if(!valid){
 		builder.Log("INFO", "There is no data present in proxies.yaml or your provided weblist txt file", "No Data", string(typedefs.Red),"")

@@ -22,6 +22,6 @@ var (
 		"https://play.google.com/store/search?q=",
 	}
 	Accept = []string{
-		"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-		"Accept: text/plain;q=0.8,image/png,*/*;q=0.5"}
+		"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+		"text/plain;q=0.8,image/png,*/*;q=0.5",}
 )

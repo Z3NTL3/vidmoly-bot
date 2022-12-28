@@ -135,7 +135,9 @@ func main() {
 	free_cores := 3
 	
 	group := new(errgroup.Group)
-	group.SetLimit(10000 * (max_worker_count - free_cores))
+	
+	runtime.GOMAXPROCS((max_worker_count-free_cores))
+	group.SetLimit(-1)
 
 	webLinks, proxies, err:= Init(); if(err != nil){
 		builder.Log("INFO", err.Error(), "Error", string(typedefs.Red),"")
